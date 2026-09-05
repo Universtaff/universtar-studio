@@ -1,0 +1,39 @@
+<!doctype html><html lang="en"><title>Authorization complete</title>
+<meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+:root{color-scheme:light dark}
+body{max-width:44rem;margin:0 auto;padding:3rem 1.25rem;font:16px/1.65 system-ui,-apple-system,Segoe UI,sans-serif}
+h1{font-size:1.4rem}
+#code{display:block;word-break:break-all;background:#8882;padding:1rem;border-radius:8px;font:14px/1.5 ui-monospace,Consolas,monospace;margin:.75rem 0}
+button{font:inherit;padding:.5rem 1rem;border-radius:8px;border:1px solid #8886;background:#8881;cursor:pointer}
+#clock{font-variant-numeric:tabular-nums}
+.err{color:#c33}
+</style>
+<h1>Authorization complete</h1>
+<p>Copy the code below and paste it into the terminal. It expires in
+<b id="clock">10:00</b> and can only be used once.</p>
+<code id="code">…</code>
+<button id="copy">Copy</button>
+<p id="meta"></p>
+<script>
+var q = new URLSearchParams(location.search);
+var code = q.get('code') || q.get('auth_code');
+var el = document.getElementById('code');
+if (code) {
+  el.textContent = code;
+  document.getElementById('meta').textContent =
+    'state: ' + (q.get('state') || '(none)');
+} else {
+  el.textContent = q.get('error_description') || q.get('error') || 'No code in URL.';
+  el.className = 'err';
+}
+document.getElementById('copy').onclick = function () {
+  navigator.clipboard.writeText(el.textContent);
+  this.textContent = 'Copied';
+};
+var left = 600, clock = document.getElementById('clock');
+setInterval(function () {
+  if (left <= 0) { clock.textContent = 'expired'; return; }
+  left--;
+  clock.textContent = Math.floor(left / 60) + ':' + String(left % 60).padStart(2, '0');
+}, 1000);
+</script>
